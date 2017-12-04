@@ -1,11 +1,9 @@
 FROM golang:latest
 
-RUN mkdir /app
-ADD . /app/
-WORKDIR /app
+ADD . /go/src/github.com/nickwu241/schedulecreator-backend
+RUN go install github.com/nickwu241/schedulecreator-backend
 
-RUN go build -o server .
+ENTRYPOINT /go/bin/schedulecreator-backend
 
 EXPOSE 8080
 
-CMD ["/app/server"]
