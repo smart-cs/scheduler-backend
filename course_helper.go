@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"encoding/json"
 	"os"
+	"path"
+	"runtime"
 	"strconv"
 	"strings"
 
@@ -73,13 +75,19 @@ func (d *DefaultCourseHelper) CreateSchedules(courses []string) []models.Schedul
 }
 
 func initDatabase() CourseDatabase {
-	f, err := os.Open(dbFilename)
-	if err != nil {
-		panic("trouble initializing database")
+	_, callerPath, _, ok := runtime.Caller(0)
+	if !ok {
+		panic("no caller information")
 	}
-	r := bufio.NewReader(f)
+
+	dbPath := path.Join(path.Dir(callerPath), dbFilename)
+	f, err := os.Open(dbPath)
+	if err != nil {
+		panic("can't initialize database")
+	}
+
 	var db CourseDatabase
-	json.NewDecoder(r).Decode(&db)
+	json.NewDecoder(bufio.NewReader(f)).Decode(&db)
 	return db
 }
 
