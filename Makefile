@@ -18,7 +18,7 @@ run: ## Build and run locally
 	go build .
 	./schedulecreator-backend
 
-docs: ## Generates API docs from docs/api.yaml. Requires Spectacle.
+generate-apidocs: ## Generates API docs from docs/api.yaml. Requires Spectacle.
 	spectacle apidocs/api.yaml --target-dir static
 
 clean: ## Clean up
