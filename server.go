@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 	"github.com/urfave/negroni"
 )
 
@@ -49,7 +50,12 @@ func NewServer(port int) Server {
 	logger := negroni.NewLogger()
 	logger.SetDateFormat(time.Stamp)
 	logger.SetFormat(logFormat)
+	cors := cors.New(cors.Options{
+		AllowedOrigins: []string{"*"},
+		AllowedMethods: []string{"GET"},
+	})
 	server.Middleware.Use(logger)
+	server.Middleware.Use(cors)
 	server.Middleware.Use(negroni.NewRecovery())
 	server.Middleware.UseHandler(router)
 	return server
