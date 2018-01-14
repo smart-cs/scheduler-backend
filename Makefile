@@ -6,7 +6,7 @@ help: ## List targets & descriptions
 build-linux-binary: ## Build the Go binary for Linux
 	GO_ENABLED=0 GOOS=linux go build .
 
-deploy: build-linux-binary ## Deploy to Heroku. Requires to be logged in on Heroku Registry.
+deploy: generate-apidocs build-linux-binary ## Deploy to Heroku. Requires to be logged in on Heroku Registry.
 	docker build --rm -f Dockerfile -t registry.heroku.com/$(HEROKU_APP_NAME)/web .
 	docker push registry.heroku.com/$(HEROKU_APP_NAME)/web
 
@@ -25,4 +25,4 @@ clean: ## Clean up
 	rm -f schedulecreator-backend
 	rm -rf static
 
-.PHONY: build-docker run-docker run-local clean
+.PHONY: help build-linux-binary deploy run-docker run generate-apidocs clean
