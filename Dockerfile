@@ -1,8 +1,8 @@
-FROM golang:latest
+FROM scratch
 
-ADD . /go/src/github.com/nickwu241/schedulecreator-backend
-RUN go install github.com/nickwu241/schedulecreator-backend
-
-ENTRYPOINT ["/go/bin/schedulecreator-backend"]
+COPY ["static/", "/static/"]
+COPY ["schedulecreator-backend", "coursedb.json", "/"]
+ENTRYPOINT ["/schedulecreator-backend"]
+CMD [""]
 
 EXPOSE 8080

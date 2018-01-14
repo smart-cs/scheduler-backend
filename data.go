@@ -4,11 +4,9 @@ import (
 	"bufio"
 	"encoding/json"
 	"os"
-	"path"
-	"runtime"
 )
 
-const dbFilename = "coursedb.json"
+const dbPath = "coursedb.json"
 
 var courseDB *CourseDatabase
 
@@ -49,12 +47,6 @@ func CourseDB() CourseDatabase {
 }
 
 func initDatabase() CourseDatabase {
-	_, callerPath, _, ok := runtime.Caller(0)
-	if !ok {
-		panic("no caller information")
-	}
-
-	dbPath := path.Join(path.Dir(callerPath), dbFilename)
 	f, err := os.Open(dbPath)
 	if err != nil {
 		panic("can't initialize database")
