@@ -44,6 +44,7 @@ func NewServer(port int) Server {
 	router.HandleFunc("/autocomplete", server.autocompleteHandler).
 		Methods("GET").
 		Queries("text", "{text}")
+	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
 
 	logger := negroni.NewLogger()
 	logger.SetDateFormat(time.Stamp)

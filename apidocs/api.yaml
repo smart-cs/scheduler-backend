@@ -1,0 +1,42 @@
+swagger: '2.0'
+info:
+  description: This server provides schedule creating functionality for UBC.
+  version: 0.0.1
+  title: UBC Course Schedule Creator
+host: sheltered-taiga-32349.herokuapp.com
+schemes:
+  - http
+  - https
+paths:
+  /schedules:
+    get:
+      summary: Returns UBC course schedules
+      description: ''
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: courses
+          description: Course names to create a schedule with
+          required: true
+          type: array
+          items:
+            type: string
+      responses:
+        '400':
+          description: Missing required parameters
+  /autocomplete:
+    get:
+      summary: Returns autocompleted courses
+      description: ''
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: text
+          description: Text to autocomplete.
+          required: true
+          type: string
+      responses:
+        '400':
+          description: Missing required parameters
