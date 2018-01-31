@@ -3,14 +3,15 @@ HEROKU_APP_NAME="sheltered-taiga-32349"
 help: ## List targets & descriptions
 	@cat Makefile* | grep -E '^[a-zA-Z_-]+:.*?## .*$$' | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-build-linux-binary: ## Build the Go binary for Linux
+build-linux-binary: # Build the Go binary for Linux
 	GO_ENABLED=0 GOOS=linux go build .
 
 deploy: generate-apidocs build-linux-binary ## Deploy to Heroku. Requires to be logged in on Heroku Registry.
 	docker build --rm -f Dockerfile -t registry.heroku.com/$(HEROKU_APP_NAME)/web .
 	docker push registry.heroku.com/$(HEROKU_APP_NAME)/web
+	make clean
 
-run-docker: build-linux-binary ## Build Docker image and run it interactively
+run-docker: build-linux-binary ## Build Docker image and run it interactively locally
 	docker build --rm -f Dockerfile -t schedulecreator-backend:latest .
 	docker run --rm -it -p 8080:8080 schedulecreator-backend:latest
 

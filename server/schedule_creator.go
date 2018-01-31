@@ -1,6 +1,7 @@
-package main
+package server
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -89,11 +90,12 @@ func (d *DefaultScheduleCreator) createSections(course string) []models.CourseSe
 				// TODO: refactor this logic out.
 				start, err := strconv.Atoi(strings.Replace(s.StartTime[i], ":", "", -1))
 				if err != nil {
-					panic(err)
+					// TODO: some sections don't have a time, figure out what to do with these
+					fmt.Printf("no startTime for %s: %v\n", sectionName, s)
 				}
 				end, err := strconv.Atoi(strings.Replace(s.EndTime[i], ":", "", -1))
 				if err != nil {
-					panic(err)
+					// TODO: same as above
 				}
 				session := models.ClassSession{
 					Activity: s.Activity[i],

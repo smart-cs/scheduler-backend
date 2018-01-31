@@ -1,8 +1,12 @@
 FROM scratch
 
-COPY ["static/", "/static/"]
-COPY ["schedulecreator-backend", "coursedb.json", "/"]
-ENTRYPOINT ["/schedulecreator-backend"]
+WORKDIR /app
+
+COPY static /app/static
+COPY server/coursedb.json /app/server/
+COPY schedulecreator-backend /app
+
+ENTRYPOINT ["/app/schedulecreator-backend"]
 CMD [""]
 
 EXPOSE 8080
