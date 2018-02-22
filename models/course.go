@@ -27,3 +27,29 @@ type Schedule struct {
 	// List of Course.
 	Courses []CourseSection `json:"courses"`
 }
+
+type ActivityType int
+
+const (
+	Laboratory ActivityType = iota
+	Lecture
+	Seminar
+	Studio
+	Tutorial
+)
+
+func (a ActivityType) String() string {
+	switch a {
+	case Laboratory:
+		return "Laboratory"
+	case Lecture:
+		return "Lecture"
+	case Seminar:
+		return "Seminar"
+	case Studio:
+		return "Studio"
+	case Tutorial:
+		return "Tutorial"
+	}
+	return "<missing String() implementation>"
+}

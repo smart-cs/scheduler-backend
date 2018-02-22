@@ -33,7 +33,10 @@ func (d *DefaultScheduleCreator) Create(courses []string) []models.Schedule {
 		if !d.courseExists(c) {
 			continue
 		}
-		schedules = d.addSections(schedules, d.createSections(c))
+		lectureTypes := []models.ActivityType{models.Lecture, models.Seminar, models.Studio}
+		schedules = d.addSections(schedules, d.createSections(c, lectureTypes))
+		schedules = d.addSections(schedules, d.createSections(c, []models.ActivityType{models.Laboratory}))
+		schedules = d.addSections(schedules, d.createSections(c, []models.ActivityType{models.Tutorial}))
 	}
 	return schedules
 }
@@ -70,15 +73,13 @@ func (d *DefaultScheduleCreator) addSections(schedules []models.Schedule, sectio
 	return result
 }
 
-func (d *DefaultScheduleCreator) createSections(course string) []models.CourseSection {
+func (d *DefaultScheduleCreator) createSections(course string, activityTypes []models.ActivityType) []models.CourseSection {
+	// Course format i.e. CPSC 121
 	var sections []models.CourseSection
 	dept := strings.Split(course, " ")[0]
 	// Go through all sections for this course.
 	for sectionName, s := range d.db[dept][course] {
-		// TODO: do we want to check for other activities?
-		if s.Activity[0] != "Lecture" &&
-			s.Activity[0] != "Seminar" &&
-			s.Activity[0] != "Studio" {
+		if !d.isIncluded(s.Activity[0], activityTypes) {
 			continue
 		}
 		// Create the sessions for each section.
@@ -114,6 +115,15 @@ func (d *DefaultScheduleCreator) createSections(course string) []models.CourseSe
 		sections = append(sections, section)
 	}
 	return sections
+}
+
+func (d *DefaultScheduleCreator) isIncluded(activity string, desiredTypes []models.ActivityType) bool {
+	for _, a := range desiredTypes {
+		if activity == a.String() {
+			return true
+		}
+	}
+	return false
 }
 
 func (d *DefaultScheduleCreator) conflictSession(s1 models.ClassSession, s2 models.ClassSession) bool {
