@@ -13,7 +13,7 @@ type ScheduleCreator interface {
 	Create(courses []string) []models.Schedule
 }
 
-// DefaultScheduleCreator implments ScheduleCreator.
+// DefaultScheduleCreator implements ScheduleCreator.
 type DefaultScheduleCreator struct {
 	db CourseDatabase
 }
