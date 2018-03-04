@@ -22,8 +22,18 @@ run: ## Build and run locally
 generate-apidocs: ## Generates API docs from docs/api.yaml. Requires Spectacle.
 	spectacle apidocs/api.yaml --target-dir static
 
+deps: ## Download dependencies
+	go get -u github.com/golang/dep/cmd/dep
+	dep ensure
+
+test: ## Run tests
+	go test ./...
+
+test-coverage: ## Run tests with coverage
+	go test -cover ./...
+
 clean: ## Clean up
 	rm -f schedulecreator-backend
 	rm -rf static
 
-.PHONY: help build-linux-binary deploy run-docker run generate-apidocs clean
+.PHONY: help build-linux-binary deploy run-docker run generate-apidocs deps test test-coverage clean
