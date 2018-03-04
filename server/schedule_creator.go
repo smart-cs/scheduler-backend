@@ -35,8 +35,8 @@ func (d *DefaultScheduleCreator) Create(courses []string) []models.Schedule {
 		}
 		lectureTypes := []models.ActivityType{models.Lecture, models.Seminar, models.Studio}
 		schedules = d.addSections(schedules, d.createSections(c, lectureTypes))
-		schedules = d.addSections(schedules, d.createSections(c, []models.ActivityType{models.Laboratory}))
-		schedules = d.addSections(schedules, d.createSections(c, []models.ActivityType{models.Tutorial}))
+		// schedules = d.addSections(schedules, d.createSections(c, []models.ActivityType{models.Laboratory}))
+		// schedules = d.addSections(schedules, d.createSections(c, []models.ActivityType{models.Tutorial}))
 	}
 	return schedules
 }
@@ -48,29 +48,36 @@ func (d *DefaultScheduleCreator) courseExists(course string) bool {
 }
 
 func (d *DefaultScheduleCreator) addSections(schedules []models.Schedule, sections []models.CourseSection) []models.Schedule {
-	var result []models.Schedule
 	if len(schedules) == 0 {
 		for _, section := range sections {
 			sections := []models.CourseSection{section}
-			result = append(result, models.Schedule{
+			schedules = append(schedules, models.Schedule{
 				Courses: sections,
 			})
 		}
-		return result
+		return schedules
 	}
 
+	newSchedules := []models.Schedule{}
 	for _, schedule := range schedules {
 		for _, section := range sections {
-			new := schedule
-			new.Courses = append(new.Courses, section)
-			// Only add the new course if it doesn't conflict.
-			if d.conflictInSchedule(new) {
-				continue
+			newSchedule, added := d.addSection(schedule, section)
+			if added {
+				newSchedules = append(newSchedules, newSchedule)
 			}
-			result = append(result, new)
 		}
 	}
-	return result
+	return newSchedules
+}
+
+// addSection returns the new schedule if it succeeds, old schedule if it fails
+func (d *DefaultScheduleCreator) addSection(schedule models.Schedule, section models.CourseSection) (models.Schedule, bool) {
+	newSchedule := schedule
+	newSchedule.Courses = append(newSchedule.Courses, section)
+	if d.conflictInSchedule(newSchedule) {
+		return schedule, false
+	}
+	return newSchedule, true
 }
 
 func (d *DefaultScheduleCreator) createSections(course string, activityTypes []models.ActivityType) []models.CourseSection {
