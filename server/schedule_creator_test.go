@@ -23,6 +23,8 @@ func TestScheduleCreator_Create(t *testing.T) {
 		{[]string{"APBI 260", "ASIA 100"}, 1},
 		{[]string{"MATH 220", "MATH 253"}, 54},
 		{[]string{"MATH 220", "MATH 335"}, 18},
+		{[]string{"CPSC 110"}, 8},
+		{[]string{"APSC 210"}, 0},
 		{[]string{"non-existent-course 101"}, 0},
 		{[]string{"BIOL 111", "non-existent-course 101"}, 2},
 		{[]string{"non-existent-course 101", "BIOL 111"}, 2},
