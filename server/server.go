@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/nickwu241/schedulecreator-backend/models"
+
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 	"github.com/urfave/negroni"
@@ -70,12 +72,20 @@ func (s *Server) Start() {
 func (s *Server) schedulesHandler(w http.ResponseWriter, r *http.Request) {
 	courses := strings.Split(r.URL.Query().Get("courses"), ",")
 	schedules := s.ScheduleCreator.Create(courses)
+	if schedules == nil {
+		// Make schedules into an array of size 0 for JSON serialization
+		schedules = make([]models.Schedule, 0)
+	}
 	s.respOK(w, schedules)
 }
 
 func (s *Server) autocompleteHandler(w http.ResponseWriter, r *http.Request) {
 	text := r.URL.Query().Get("text")
 	completes := s.AutoCompleter.CoursesWithPrefix(text)
+	if completes == nil {
+		// Make completes into an array of size 0 for JSON serialization
+		completes = make([]string, 0)
+	}
 	s.respOK(w, completes)
 }
 
