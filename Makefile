@@ -15,7 +15,7 @@ run-docker: build-linux-binary ## Build Docker image and run it interactively lo
 	docker build --rm -f Dockerfile -t schedulecreator-backend:latest .
 	docker run --rm -it -p 8080:8080 schedulecreator-backend:latest
 
-run: ## Build and run locally
+run: ## Build and run locally on port 8080 by default or $PORT if set
 	go build .
 	./schedulecreator-backend
 
