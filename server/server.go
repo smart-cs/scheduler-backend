@@ -41,10 +41,10 @@ func NewServer(port int) Server {
 	}
 
 	router := mux.NewRouter()
-	router.HandleFunc("/schedules", server.schedulesHandler).
+	router.HandleFunc("/schedules", server.SchedulesHandler).
 		Methods("GET").
 		Queries("courses", "{courses}")
-	router.HandleFunc("/autocomplete", server.autocompleteHandler).
+	router.HandleFunc("/autocomplete", server.AutocompleteHandler).
 		Methods("GET").
 		Queries("text", "{text}")
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
@@ -69,7 +69,8 @@ func (s *Server) Start() {
 	http.ListenAndServe(fmt.Sprintf(":%d", s.Port), s.Middleware)
 }
 
-func (s *Server) schedulesHandler(w http.ResponseWriter, r *http.Request) {
+// SchedulesHandler handles the schedule endpoint
+func (s *Server) SchedulesHandler(w http.ResponseWriter, r *http.Request) {
 	courses := strings.Split(r.URL.Query().Get("courses"), ",")
 	schedules := s.ScheduleCreator.Create(courses)
 	if schedules == nil {
@@ -79,7 +80,8 @@ func (s *Server) schedulesHandler(w http.ResponseWriter, r *http.Request) {
 	s.respOK(w, schedules)
 }
 
-func (s *Server) autocompleteHandler(w http.ResponseWriter, r *http.Request) {
+// AutocompleteHandler handles the autocomplete endpoint
+func (s *Server) AutocompleteHandler(w http.ResponseWriter, r *http.Request) {
 	text := r.URL.Query().Get("text")
 	completes := s.AutoCompleter.CoursesWithPrefix(text)
 	if completes == nil {
