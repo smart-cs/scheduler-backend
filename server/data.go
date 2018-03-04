@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-const dbPath = "server/coursedb.json"
+const defaultDatabasePath = "server/coursedb.json"
 
 var courseDB *CourseDatabase
 
@@ -39,14 +39,14 @@ func ValidCourses() []string {
 
 // CourseDB returns the CourseDatabase.
 func CourseDB() CourseDatabase {
-	db := initDatabase()
 	if courseDB == nil {
-		courseDB = &db
+		LoadLocalDatabase(defaultDatabasePath)
 	}
 	return *courseDB
 }
 
-func initDatabase() CourseDatabase {
+// LoadLocalDatabase loads the database from the given file path
+func LoadLocalDatabase(dbPath string) {
 	f, err := os.Open(dbPath)
 	if err != nil {
 		panic("can't initialize database")
@@ -54,5 +54,5 @@ func initDatabase() CourseDatabase {
 
 	var db CourseDatabase
 	json.NewDecoder(bufio.NewReader(f)).Decode(&db)
-	return db
+	courseDB = &db
 }
