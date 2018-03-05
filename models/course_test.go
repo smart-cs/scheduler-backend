@@ -3,7 +3,7 @@ package models_test
 import (
 	"testing"
 
-	"github.com/nickwu241/schedulecreator-backend/models"
+	"github.com/smart-cs/scheduler-backend/models"
 
 	"github.com/stretchr/testify/assert"
 )

@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/nickwu241/schedulecreator-backend/server"
+	"github.com/smart-cs/scheduler-backend/server"
 )
 
 const defaultPort = 8080

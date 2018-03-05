@@ -4,9 +4,9 @@ WORKDIR /app
 
 COPY static /app/static
 COPY server/coursedb.json /app/server/
-COPY schedulecreator-backend /app
+COPY scheduler-backend /app
 
-ENTRYPOINT ["/app/schedulecreator-backend"]
+ENTRYPOINT ["/app/scheduler-backend"]
 CMD [""]
 
 EXPOSE 8080

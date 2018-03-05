@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/nickwu241/schedulecreator-backend"
+	"github.com/smart-cs/scheduler-backend"
 )
 
 func runMainAndAssertExit(t *testing.T, shouldExit bool) {

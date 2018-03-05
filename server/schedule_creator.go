@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/nickwu241/schedulecreator-backend/models"
+	"github.com/smart-cs/scheduler-backend/models"
 )
 
 // ScheduleCreator is the interface to create schedules.

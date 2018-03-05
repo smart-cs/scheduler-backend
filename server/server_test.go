@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/nickwu241/schedulecreator-backend/server"
+	"github.com/smart-cs/scheduler-backend/server"
 	"github.com/stretchr/testify/assert"
 )
 

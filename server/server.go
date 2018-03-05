@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nickwu241/schedulecreator-backend/models"
+	"github.com/smart-cs/scheduler-backend/models"
 
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"

@@ -12,12 +12,12 @@ deploy: generate-apidocs build-linux-binary ## Deploy to Heroku. Requires to be 
 	make clean
 
 run-docker: build-linux-binary ## Build Docker image and run it interactively locally
-	docker build --rm -f Dockerfile -t schedulecreator-backend:latest .
-	docker run --rm -it -p 8080:8080 schedulecreator-backend:latest
+	docker build --rm -f Dockerfile -t scheduler-backend:latest .
+	docker run --rm -it -p 8080:8080 scheduler-backend:latest
 
 run: ## Build and run locally on port 8080 by default or $PORT if set
 	go build .
-	./schedulecreator-backend
+	./scheduler-backend
 
 generate-apidocs: ## Generates API docs from docs/api.yaml. Requires Spectacle.
 	spectacle apidocs/api.yaml --target-dir static
@@ -33,7 +33,7 @@ test-coverage: ## Run tests with coverage
 	go test -cover ./...
 
 clean: ## Clean up
-	rm -f schedulecreator-backend
+	rm -f scheduler-backend
 	rm -rf static
 
 .PHONY: help build-linux-binary deploy run-docker run generate-apidocs deps test test-coverage clean
