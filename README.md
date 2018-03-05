@@ -1,4 +1,4 @@
-# schedulecreator-backend
+# scheduler-backend
 Retrieves and uses data from UBC Course Schedule.
 
 ## Developing
@@ -6,7 +6,7 @@ Make sure you have `Go`, `make`, `Docker` installed
 
 Get the code (to your `$GOPATH`):
 ```
-go get -d github.com/nickwu241/schedulecreator-backend
+go get -d github.com/smart-cs/schedulecreator-backend
 ```
 
 Run the server locally:
