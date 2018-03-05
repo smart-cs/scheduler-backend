@@ -3,7 +3,7 @@ info:
   description: This server provides schedule creating functionality for UBC.
   version: 0.0.1
   title: UBC Course Schedule Creator
-host: sheltered-taiga-32349.herokuapp.com
+host: schedulecreator.herokuapp.com
 schemes:
   - http
   - https
