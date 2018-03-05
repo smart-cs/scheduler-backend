@@ -16,7 +16,7 @@ func main() {
 	if portEnv := os.Getenv("PORT"); portEnv != "" {
 		port, err := strconv.Atoi(portEnv)
 		if err != nil {
-			fmt.Printf("ERROR: can't convert PORT environment is not an integer")
+			fmt.Println("ERROR: can't convert PORT environment is not an integer")
 			return
 		}
 		s = server.NewServer(port)
