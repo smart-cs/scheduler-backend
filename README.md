@@ -6,7 +6,7 @@ Make sure you have `Go`, `make`, `Docker` installed
 
 Get the code (to your `$GOPATH`):
 ```
-go get -d github.com/smart-cs/schedulecreator-backend
+go get -d github.com/smart-cs/scheduler-backend
 ```
 
 Run the server locally:
