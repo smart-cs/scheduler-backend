@@ -1,4 +1,6 @@
 # scheduler-backend
+[![CircleCI](https://circleci.com/gh/Smart-CS/scheduler-backend.svg?style=svg)](https://circleci.com/gh/Smart-CS/scheduler-backend)
+
 Retrieves and uses data from UBC Course Schedule.
 
 ## Developing
@@ -8,9 +10,9 @@ To get the code (to your `$GOPATH`):
 ```
 go get -d github.com/smart-cs/scheduler-backend
 ```
-Your repository should end up in ~/go/src/github.com/smart-cs/scheduler-backend
+By default, your `$GOPATH` is `~/go`. If you haven't changed it, the repository should end up in `~/go/src/github.com/smart-cs/scheduler-backend`
 
-Run the server locally:
+To run the server locally:
 ```shell
 make run
 ```
