@@ -4,10 +4,11 @@ Retrieves and uses data from UBC Course Schedule.
 ## Developing
 Make sure you have `Go`, `make`, `Docker` installed
 
-Get the code (to your `$GOPATH`):
+To get the code (to your `$GOPATH`):
 ```
 go get -d github.com/smart-cs/scheduler-backend
 ```
+Your repository should end up in ~/go/src/github.com/smart-cs/scheduler-backend
 
 Run the server locally:
 ```shell
