@@ -9,9 +9,9 @@ import (
 
 func TestScheduleCreator_Create(t *testing.T) {
 	assert := assert.New(t)
-	table := []struct {
-		inCourses []string
-		outLen    int
+	testTables := []struct {
+		courses   []string
+		expOutLen int
 	}{
 		{[]string{"APSC 201"}, 7},
 		{[]string{"BIOL 111"}, 2},
@@ -19,6 +19,7 @@ func TestScheduleCreator_Create(t *testing.T) {
 		{[]string{"MATH 253"}, 6},
 		{[]string{"MATH 335"}, 2},
 		{[]string{"APBI 260"}, 1},
+		{[]string{"CPEN 221"}, 1},
 		{[]string{"ASIA 100"}, 2},
 		{[]string{"APBI 260", "ASIA 100"}, 1},
 		{[]string{"MATH 220", "MATH 253"}, 54},
@@ -32,14 +33,40 @@ func TestScheduleCreator_Create(t *testing.T) {
 
 	server.LoadLocalDatabase("coursedb.json")
 	sc := server.NewScheduleCreator()
-	for _, item := range table {
-		schedules := sc.Create(item.inCourses)
+	for _, tt := range testTables {
+		schedules := sc.Create(tt.courses, server.ScheduleSelectOptions{Term: "1-2"})
 		assert.Equalf(
-			item.outLen,
+			tt.expOutLen,
 			len(schedules),
 			"creating schedules from %v should return %d schedules, but got %d",
-			item.inCourses,
-			item.outLen,
+			tt.courses,
+			tt.expOutLen,
+			len(schedules),
+		)
+	}
+}
+
+func TestShceduleCreator_Term(t *testing.T) {
+	assert := assert.New(t)
+	testTables := []struct {
+		courses   []string
+		term      string
+		expOutLen int
+	}{
+		{[]string{"CPEN 221"}, "1", 1},
+		{[]string{"CPEN 221"}, "2", 0},
+	}
+
+	server.LoadLocalDatabase("coursedb.json")
+	sc := server.NewScheduleCreator()
+	for _, tt := range testTables {
+		schedules := sc.Create(tt.courses, server.ScheduleSelectOptions{Term: tt.term})
+		assert.Equalf(
+			tt.expOutLen,
+			len(schedules),
+			"creating schedules from %v should return %d schedules, but got %d",
+			tt.courses,
+			tt.expOutLen,
 			len(schedules),
 		)
 	}
