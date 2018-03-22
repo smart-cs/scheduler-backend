@@ -15,13 +15,15 @@ type ScheduleCreator interface {
 
 // DefaultScheduleCreator implements ScheduleCreator.
 type DefaultScheduleCreator struct {
-	db CourseDatabase
+	db     CourseDatabase
+	helper CourseHelper
 }
 
 // NewScheduleCreator constructs a new ScheduleCreator.
 func NewScheduleCreator() ScheduleCreator {
 	return &DefaultScheduleCreator{
-		db: CourseDB(),
+		db:     CourseDB(),
+		helper: CourseHelper{},
 	}
 }
 
@@ -74,7 +76,7 @@ func (d *DefaultScheduleCreator) addSections(schedules []models.Schedule, sectio
 func (d *DefaultScheduleCreator) addSection(schedule models.Schedule, section models.CourseSection) (models.Schedule, bool) {
 	newSchedule := schedule
 	newSchedule.Courses = append(newSchedule.Courses, section)
-	if d.conflictInSchedule(newSchedule) {
+	if d.helper.ConflictInSchedule(newSchedule) {
 		return schedule, false
 	}
 	return newSchedule, true
@@ -86,7 +88,7 @@ func (d *DefaultScheduleCreator) createSections(course string, activityTypes []m
 	dept := strings.Split(course, " ")[0]
 	// Go through all sections for this course.
 	for sectionName, s := range d.db[dept][course] {
-		if !d.isIncluded(s.Activity[0], activityTypes) {
+		if !d.helper.IsIncluded(s.Activity[0], activityTypes) {
 			continue
 		}
 		// Create the sessions for each section.
@@ -122,41 +124,4 @@ func (d *DefaultScheduleCreator) createSections(course string, activityTypes []m
 		sections = append(sections, section)
 	}
 	return sections
-}
-
-func (d *DefaultScheduleCreator) isIncluded(activity string, desiredTypes []models.ActivityType) bool {
-	for _, a := range desiredTypes {
-		if activity == a.String() {
-			return true
-		}
-	}
-	return false
-}
-
-func (d *DefaultScheduleCreator) conflictSession(s1 models.ClassSession, s2 models.ClassSession) bool {
-	return s1.Term == s2.Term && s1.Day == s2.Day &&
-		((s1.Start <= s2.Start && s2.Start < s1.End) ||
-			(s1.Start < s2.End && s2.End <= s1.End))
-}
-
-func (d *DefaultScheduleCreator) conflictSection(s1 models.CourseSection, s2 models.CourseSection) bool {
-	for _, ses1 := range s1.Sessions {
-		for _, ses2 := range s2.Sessions {
-			if d.conflictSession(ses1, ses2) {
-				return true
-			}
-		}
-	}
-	return false
-}
-
-func (d *DefaultScheduleCreator) conflictInSchedule(schedule models.Schedule) bool {
-	for _, c1 := range schedule.Courses {
-		for _, c2 := range schedule.Courses {
-			if c1.Name != c2.Name && d.conflictSection(c1, c2) {
-				return true
-			}
-		}
-	}
-	return false
 }
