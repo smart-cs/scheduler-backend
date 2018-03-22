@@ -11,13 +11,19 @@ import (
 
 // ScheduleCreator is the interface to create schedules.
 type ScheduleCreator interface {
-	Create(courses []string) []models.Schedule
+	Create(courses []string, options ScheduleSelectOptions) []models.Schedule
 }
 
 // DefaultScheduleCreator implements ScheduleCreator.
 type DefaultScheduleCreator struct {
 	db     CourseDatabase
 	helper CourseHelper
+}
+
+// ScheduleSelectOptions is a criteria for selecting schedules.
+type ScheduleSelectOptions struct {
+	// Term must be 1, 2, 1-2
+	Term string
 }
 
 // NewScheduleCreator constructs a new ScheduleCreator.
@@ -29,7 +35,7 @@ func NewScheduleCreator() ScheduleCreator {
 }
 
 // Create returns all non-conflicting schedules given a list of courses.
-func (sc *DefaultScheduleCreator) Create(courses []string) []models.Schedule {
+func (sc *DefaultScheduleCreator) Create(courses []string, options ScheduleSelectOptions) []models.Schedule {
 	var schedules []models.Schedule
 	for _, c := range courses {
 		// Skip invalid courses.
@@ -37,7 +43,7 @@ func (sc *DefaultScheduleCreator) Create(courses []string) []models.Schedule {
 			continue
 		}
 		lectureTypes := []models.ActivityType{models.Lecture, models.Seminar, models.Studio}
-		schedules = sc.addSections(schedules, sc.createSections(c, lectureTypes))
+		schedules = sc.addSections(schedules, sc.createSections(c, lectureTypes, options.Term))
 		// schedules = d.addSections(schedules, d.createSections(c, []models.ActivityType{models.Laboratory}))
 		// schedules = d.addSections(schedules, d.createSections(c, []models.ActivityType{models.Tutorial}))
 	}
@@ -83,13 +89,19 @@ func (sc *DefaultScheduleCreator) addSection(schedule models.Schedule, section m
 	return newSchedule, true
 }
 
-func (sc *DefaultScheduleCreator) createSections(course string, activityTypes []models.ActivityType) []models.CourseSection {
+// createSections returns sections of a course with one of the specified types, thats in terms.
+// Possible terms: 1, 2, 1-2.
+func (sc *DefaultScheduleCreator) createSections(course string, activityTypes []models.ActivityType, terms string) []models.CourseSection {
 	// Course format i.e. CPSC 121
 	var sections []models.CourseSection
 	dept := strings.Split(course, " ")[0]
 	// Go through all sections for this course.
 	for sectionName, s := range sc.db[dept][course] {
 		if !sc.helper.IsIncluded(s.Activity[0], activityTypes) {
+			continue
+		}
+
+		if (terms == "1" || terms == "2") && s.Term[0] != terms {
 			continue
 		}
 
