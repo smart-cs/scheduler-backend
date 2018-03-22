@@ -72,7 +72,15 @@ func (s *Server) Start() {
 // SchedulesHandler handles the schedule endpoint
 func (s *Server) SchedulesHandler(w http.ResponseWriter, r *http.Request) {
 	courses := strings.Split(r.URL.Query().Get("courses"), ",")
-	schedules := s.ScheduleCreator.Create(courses)
+	term := r.URL.Query().Get("term")
+	if term == "" {
+		term = "1-2"
+	}
+	selectOptions := ScheduleSelectOptions{
+		Term: term,
+	}
+
+	schedules := s.ScheduleCreator.Create(courses, selectOptions)
 	if schedules == nil {
 		// Make schedules into an array of size 0 for JSON serialization
 		schedules = make([]models.Schedule, 0)

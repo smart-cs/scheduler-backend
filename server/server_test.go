@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSchedulesHandler(t *testing.T) {
+func TestSchedulesHandlerEmptyBody(t *testing.T) {
 	t.Log("hitting schedules endpoint with a course without possible schedules should return an empty body")
 	assert := assert.New(t)
 	server.LoadLocalDatabase("coursedb.json")
