@@ -16,8 +16,7 @@ run-docker: build-linux-binary ## Build Docker image and run it interactively lo
 	docker run --rm -it -p 8080:8080 scheduler-backend:latest
 
 run: ## Build and run locally on port 8080 by default or $PORT if set
-	go build .
-	./scheduler-backend
+	go run main.go
 
 generate-apidocs: ## Generates API docs from docs/api.yaml. Requires Spectacle.
 	spectacle apidocs/api.yaml --target-dir static
