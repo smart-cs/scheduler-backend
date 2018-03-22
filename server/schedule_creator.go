@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/pkg/errors"
 	"github.com/smart-cs/scheduler-backend/models"
 )
 
@@ -91,32 +92,12 @@ func (sc *DefaultScheduleCreator) createSections(course string, activityTypes []
 		if !sc.helper.IsIncluded(s.Activity[0], activityTypes) {
 			continue
 		}
-		// Create the sessions for each section.
-		var sessions []models.ClassSession
-		for i, dayStr := range s.Days {
-			// dayStr looks like "Mon Wed Fri".
-			for _, day := range strings.Split(dayStr, " ") {
 
-				// TODO: refactor this logic out.
-				start, err := strconv.Atoi(strings.Replace(s.StartTime[i], ":", "", -1))
-				if err != nil {
-					// TODO: some sections don't have a time, figure out what to do with these
-					fmt.Printf("no startTime for %s: %v\n", sectionName, s)
-				}
-				end, err := strconv.Atoi(strings.Replace(s.EndTime[i], ":", "", -1))
-				if err != nil {
-					// TODO: same as above
-				}
-				session := models.ClassSession{
-					Activity: s.Activity[i],
-					Term:     s.Term[i],
-					Day:      day,
-					Start:    start,
-					End:      end,
-				}
-				sessions = append(sessions, session)
-			}
+		sessions, err := sc.sessions(s)
+		if err != nil {
+			fmt.Printf("ERROR: validating fields for %q: %s\n", sectionName, err.Error())
 		}
+
 		section := models.CourseSection{
 			Name:     sectionName,
 			Sessions: sessions,
@@ -124,4 +105,36 @@ func (sc *DefaultScheduleCreator) createSections(course string, activityTypes []
 		sections = append(sections, section)
 	}
 	return sections
+}
+
+func (sc *DefaultScheduleCreator) sessions(s Section) ([]models.ClassSession, error) {
+	var sessions []models.ClassSession
+	for i, dayStr := range s.Days {
+		// dayStr looks like "Mon Wed Fri".
+		for _, day := range strings.Split(dayStr, " ") {
+			start, err := sc.parseTime(s.StartTime[0])
+			if err != nil {
+				return nil, errors.Wrap(err, "no startTime")
+			}
+			end, err := sc.parseTime(s.EndTime[0])
+			if err != nil {
+				return nil, errors.Wrap(err, "no endTime")
+			}
+			session := models.ClassSession{
+				Activity: s.Activity[i],
+				Term:     s.Term[i],
+				Day:      day,
+				Start:    start,
+				End:      end,
+			}
+			sessions = append(sessions, session)
+		}
+	}
+	return sessions, nil
+}
+
+// praseTime parses time in the format HH:MM to an int HHMM.
+func (sc *DefaultScheduleCreator) parseTime(time string) (int, error) {
+	parsed, err := strconv.Atoi(strings.Replace(time, ":", "", -1))
+	return parsed, err
 }
