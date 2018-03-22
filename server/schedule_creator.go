@@ -28,28 +28,28 @@ func NewScheduleCreator() ScheduleCreator {
 }
 
 // Create returns all non-conflicting schedules given a list of courses.
-func (d *DefaultScheduleCreator) Create(courses []string) []models.Schedule {
+func (sc *DefaultScheduleCreator) Create(courses []string) []models.Schedule {
 	var schedules []models.Schedule
 	for _, c := range courses {
 		// Skip invalid courses.
-		if !d.courseExists(c) {
+		if !sc.courseExists(c) {
 			continue
 		}
 		lectureTypes := []models.ActivityType{models.Lecture, models.Seminar, models.Studio}
-		schedules = d.addSections(schedules, d.createSections(c, lectureTypes))
+		schedules = sc.addSections(schedules, sc.createSections(c, lectureTypes))
 		// schedules = d.addSections(schedules, d.createSections(c, []models.ActivityType{models.Laboratory}))
 		// schedules = d.addSections(schedules, d.createSections(c, []models.ActivityType{models.Tutorial}))
 	}
 	return schedules
 }
 
-func (d *DefaultScheduleCreator) courseExists(course string) bool {
+func (sc *DefaultScheduleCreator) courseExists(course string) bool {
 	dept := strings.Split(course, " ")[0]
-	_, present := d.db[dept][course]
+	_, present := sc.db[dept][course]
 	return present
 }
 
-func (d *DefaultScheduleCreator) addSections(schedules []models.Schedule, sections []models.CourseSection) []models.Schedule {
+func (sc *DefaultScheduleCreator) addSections(schedules []models.Schedule, sections []models.CourseSection) []models.Schedule {
 	if len(schedules) == 0 {
 		for _, section := range sections {
 			sections := []models.CourseSection{section}
@@ -63,7 +63,7 @@ func (d *DefaultScheduleCreator) addSections(schedules []models.Schedule, sectio
 	newSchedules := []models.Schedule{}
 	for _, schedule := range schedules {
 		for _, section := range sections {
-			newSchedule, added := d.addSection(schedule, section)
+			newSchedule, added := sc.addSection(schedule, section)
 			if added {
 				newSchedules = append(newSchedules, newSchedule)
 			}
@@ -73,22 +73,22 @@ func (d *DefaultScheduleCreator) addSections(schedules []models.Schedule, sectio
 }
 
 // addSection returns the new schedule if it succeeds, old schedule if it fails
-func (d *DefaultScheduleCreator) addSection(schedule models.Schedule, section models.CourseSection) (models.Schedule, bool) {
+func (sc *DefaultScheduleCreator) addSection(schedule models.Schedule, section models.CourseSection) (models.Schedule, bool) {
 	newSchedule := schedule
 	newSchedule.Courses = append(newSchedule.Courses, section)
-	if d.helper.ConflictInSchedule(newSchedule) {
+	if sc.helper.ConflictInSchedule(newSchedule) {
 		return schedule, false
 	}
 	return newSchedule, true
 }
 
-func (d *DefaultScheduleCreator) createSections(course string, activityTypes []models.ActivityType) []models.CourseSection {
+func (sc *DefaultScheduleCreator) createSections(course string, activityTypes []models.ActivityType) []models.CourseSection {
 	// Course format i.e. CPSC 121
 	var sections []models.CourseSection
 	dept := strings.Split(course, " ")[0]
 	// Go through all sections for this course.
-	for sectionName, s := range d.db[dept][course] {
-		if !d.helper.IsIncluded(s.Activity[0], activityTypes) {
+	for sectionName, s := range sc.db[dept][course] {
+		if !sc.helper.IsIncluded(s.Activity[0], activityTypes) {
 			continue
 		}
 		// Create the sessions for each section.
