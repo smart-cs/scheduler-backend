@@ -7,28 +7,43 @@ host: schedulecreator.herokuapp.com
 schemes:
   - http
   - https
+
 paths:
   /schedules:
     get:
-      summary: Returns UBC course schedules
-      description: ''
+      summary: GET /schedules
+      description: 'Returns UBC course schedules given input courses.'
       produces:
         - application/json
       parameters:
         - in: query
           name: courses
-          description: Course names to create a schedule with
+          description: Course names to create a schedule with.
           required: true
           type: array
           items:
             type: string
+          example: ['MATH 100', 'CPSC 221']
+        - in: query
+          name: term
+          description: The term to create the schedules for.
+          schema:
+            type: string
+            enum: [1, 2, 1-2]
+            example: 2
+          default: 1-2
       responses:
-        '400':
-          description: Missing required parameters
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Schedule'
+        400:
+          description: Missing required parameters.
+
   /autocomplete:
     get:
-      summary: Returns autocompleted courses
-      description: ''
+      summary: GET /autocomplete
+      description: 'Returns autocompleted valid courses.'
       produces:
         - application/json
       parameters:
@@ -38,5 +53,47 @@ paths:
           required: true
           type: string
       responses:
-        '400':
-          description: Missing required parameters
+        200:
+          description: An array of valid courses.
+          schema:
+            type: array
+            items:
+              type: string
+        400:
+          description: Missing required parameters.
+
+definitions:
+  Schedule:
+    properties:
+      courses:
+        type: array
+        items:
+          $ref: '#/definitions/Course'
+
+  Course:
+    properties:
+      name:
+        type: string
+        example: MATH 100 102
+      sessions:
+        type: array
+        items:
+          $ref: '#/definitions/Session'
+
+  Session:
+    properties:
+      activity:
+        type: string
+        example: Lecture
+      term:
+        type: string
+        example: 1
+      day:
+        type: string
+        example: Thu
+      start:
+        type: int
+        example: 800
+      end:
+        type: int
+        example: 930
