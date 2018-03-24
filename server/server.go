@@ -74,11 +74,13 @@ func (s *Server) Start() {
 func (s *Server) SchedulesHandler(w http.ResponseWriter, r *http.Request) {
 	courses := strings.Split(r.URL.Query().Get("courses"), ",")
 	term := r.URL.Query().Get("term")
+	lecturesOnly := r.URL.Query().Get("lectures_only")
 	if term == "" {
 		term = "1-2"
 	}
 	selectOptions := schedules.ScheduleSelectOptions{
 		Term: term,
+		SelectLabsAndTutorials: lecturesOnly == "false",
 	}
 
 	schedules := s.ScheduleCreator.Create(courses, selectOptions)
