@@ -38,7 +38,6 @@ func NewScheduleCreator() ScheduleCreator {
 
 // Create returns all non-conflicting schedules given a list of courses.
 func (sc *DefaultScheduleCreator) Create(courses []string, options ScheduleSelectOptions) []models.Schedule {
-	fmt.Printf("term=%s\n", options.Term)
 	var schedules []models.Schedule
 	for _, c := range courses {
 		// Skip invalid courses.
