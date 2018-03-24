@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/smart-cs/scheduler-backend/models"
+	"github.com/smart-cs/scheduler-backend/schedules"
 
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
@@ -20,8 +21,8 @@ const logFormat = "{{.StartTime}} | {{.Status}} | {{.Duration}} | {{.Method}} {{
 type Server struct {
 	Port            int
 	Middleware      *negroni.Negroni
-	ScheduleCreator ScheduleCreator
-	AutoCompleter   AutoCompleter
+	ScheduleCreator schedules.ScheduleCreator
+	AutoCompleter   schedules.AutoCompleter
 }
 
 // StandardResponse is the default response from the server.
@@ -36,8 +37,8 @@ func NewServer(port int) Server {
 	server := Server{
 		Port:            port,
 		Middleware:      negroni.New(),
-		ScheduleCreator: NewScheduleCreator(),
-		AutoCompleter:   NewAutoCompleter(),
+		ScheduleCreator: schedules.NewScheduleCreator(),
+		AutoCompleter:   schedules.NewAutoCompleter(),
 	}
 
 	router := mux.NewRouter()
@@ -76,7 +77,7 @@ func (s *Server) SchedulesHandler(w http.ResponseWriter, r *http.Request) {
 	if term == "" {
 		term = "1-2"
 	}
-	selectOptions := ScheduleSelectOptions{
+	selectOptions := schedules.ScheduleSelectOptions{
 		Term: term,
 	}
 

@@ -1,4 +1,4 @@
-package server
+package schedules
 
 import "github.com/smart-cs/scheduler-backend/models"
 

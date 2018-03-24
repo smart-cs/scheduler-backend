@@ -1,9 +1,10 @@
-package server
+package schedules
 
 import (
 	"strings"
 
 	"github.com/derekparker/trie"
+	"github.com/smart-cs/scheduler-backend/database"
 )
 
 // AutoCompleter finds courses with certain prefixes.
@@ -19,7 +20,7 @@ type DefaultAutoCompleter struct {
 // NewAutoCompleter constructs an AutoCompleter.
 func NewAutoCompleter() AutoCompleter {
 	t := trie.New()
-	for _, d := range ValidCourses() {
+	for _, d := range database.ValidCourses() {
 		t.Add(d, nil)
 	}
 	return &DefaultAutoCompleter{

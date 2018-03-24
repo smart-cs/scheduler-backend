@@ -1,4 +1,4 @@
-package server
+package database
 
 import (
 	"bufio"
@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-const defaultDatabasePath = "server/coursedb.json"
+const defaultDatabasePath = "database/coursedb.json"
 
 var courseDB *CourseDatabase
 

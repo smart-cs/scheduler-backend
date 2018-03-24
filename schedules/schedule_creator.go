@@ -1,4 +1,4 @@
-package server
+package schedules
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
+	"github.com/smart-cs/scheduler-backend/database"
 	"github.com/smart-cs/scheduler-backend/models"
 )
 
@@ -16,7 +17,7 @@ type ScheduleCreator interface {
 
 // DefaultScheduleCreator implements ScheduleCreator.
 type DefaultScheduleCreator struct {
-	db     CourseDatabase
+	db     database.CourseDatabase
 	helper CourseHelper
 }
 
@@ -30,7 +31,7 @@ type ScheduleSelectOptions struct {
 // NewScheduleCreator constructs a new ScheduleCreator.
 func NewScheduleCreator() ScheduleCreator {
 	return &DefaultScheduleCreator{
-		db:     CourseDB(),
+		db:     database.CourseDB(),
 		helper: CourseHelper{},
 	}
 }
@@ -200,7 +201,7 @@ func (sc *DefaultScheduleCreator) createSections(course, term string, activityTy
 	return sections
 }
 
-func (sc *DefaultScheduleCreator) sessions(s Section) ([]models.ClassSession, error) {
+func (sc *DefaultScheduleCreator) sessions(s database.Section) ([]models.ClassSession, error) {
 	var sessions []models.ClassSession
 	for i, dayStr := range s.Days {
 		// dayStr looks like "Mon Wed Fri".

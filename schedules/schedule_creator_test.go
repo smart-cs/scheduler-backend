@@ -1,14 +1,15 @@
-package server_test
+package schedules_test
 
 import (
 	"testing"
 
-	"github.com/smart-cs/scheduler-backend/server"
+	"github.com/smart-cs/scheduler-backend/database"
+	"github.com/smart-cs/scheduler-backend/schedules"
 	"github.com/stretchr/testify/assert"
 )
 
 func setup() {
-	server.LoadLocalDatabase("coursedb.json")
+	database.LoadLocalDatabase("../database/coursedb.json")
 }
 
 type scheduleCreatorTestTable struct {
@@ -34,8 +35,8 @@ var defaultTestTables = []scheduleCreatorTestTable{
 	{[]string{"non-existent-course 101", "BIOL 111"}, 2, 1},
 }
 
-func assertTables(assert *assert.Assertions, testTables []scheduleCreatorTestTable, options server.ScheduleSelectOptions) {
-	sc := server.NewScheduleCreator()
+func assertTables(assert *assert.Assertions, testTables []scheduleCreatorTestTable, options schedules.ScheduleSelectOptions) {
+	sc := schedules.NewScheduleCreator()
 	for _, tt := range testTables {
 		schedules := sc.Create(tt.courses, options)
 		assert.Equalf(
@@ -64,7 +65,7 @@ func TestScheduleCreator_CreateDefault(t *testing.T) {
 		{[]string{"CPSC 221"}, 5, 1},
 		{[]string{"APBI 260", "ASIA 100"}, 1, 2},
 	}...)
-	options := server.ScheduleSelectOptions{
+	options := schedules.ScheduleSelectOptions{
 		Term: "1-2",
 		SelectLabsAndTutorials: false,
 	}
@@ -81,7 +82,7 @@ func TestScheduleCreator_CreateWithLabsAndTuts(t *testing.T) {
 		{[]string{"CPSC 221"}, 72, 2},
 		{[]string{"APBI 260", "ASIA 100"}, 0, 0},
 	}...)
-	options := server.ScheduleSelectOptions{
+	options := schedules.ScheduleSelectOptions{
 		Term: "1-2",
 		SelectLabsAndTutorials: true,
 	}
@@ -100,9 +101,9 @@ func TestShceduleCreator_CreateWithTerm(t *testing.T) {
 		{[]string{"CPEN 221"}, "2", 0},
 	}
 
-	sc := server.NewScheduleCreator()
+	sc := schedules.NewScheduleCreator()
 	for _, tt := range testTables {
-		schedules := sc.Create(tt.courses, server.ScheduleSelectOptions{Term: tt.term})
+		schedules := sc.Create(tt.courses, schedules.ScheduleSelectOptions{Term: tt.term})
 		assert.Equalf(
 			tt.expSchedulesLen, len(schedules),
 			"creating schedules from %v should return %d schedules, but got %d",

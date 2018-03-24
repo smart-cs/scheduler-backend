@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/smart-cs/scheduler-backend/database"
 	"github.com/smart-cs/scheduler-backend/server"
 	"github.com/stretchr/testify/assert"
 )
@@ -15,7 +16,7 @@ import (
 func TestSchedulesHandlerEmptyBody(t *testing.T) {
 	t.Log("hitting schedules endpoint with a course without possible schedules should return an empty body")
 	assert := assert.New(t)
-	server.LoadLocalDatabase("coursedb.json")
+	database.LoadLocalDatabase("../database/coursedb.json")
 
 	s := server.NewServer(8080)
 	assert.NotNil(s, "a new server shouldn't be nil")
