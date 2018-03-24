@@ -19,7 +19,7 @@ func TestValidCourses(t *testing.T) {
 	validCourses := database.ValidCourses()
 	assert.Contains(validCourses, "CPSC 121")
 	assert.Contains(validCourses, "MATH 100")
-	assert.Contains(validCourses, "CPSC 101")
+	assert.Contains(validCourses, "MATH 101")
 	assert.NotContains(validCourses, "cpsc 121")
 }
 
