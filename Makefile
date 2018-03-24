@@ -18,8 +18,8 @@ run-docker: generate-apidocs build-linux-binary ## Build Docker image and run it
 run: ## Build and run locally on port 8080 by default or $PORT if set
 	go run main.go
 
-generate-apidocs: ## Generates API docs from docs/api.yaml. Requires Spectacle.
-	spectacle apidocs/api.yaml --target-dir static
+generate-apidocs: ## Generates API docs from docs/api.yml. Requires Spectacle.
+	spectacle apidocs/api.yml --target-dir static
 
 deps: ## Download dependencies
 	go get -u github.com/golang/dep/cmd/dep
