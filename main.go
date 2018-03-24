@@ -26,7 +26,7 @@ func main() {
 	s.Start()
 }
 
-// RunMain runs main, here for testing purposes
+// RunMain runs main for testing purposes.
 func RunMain() {
 	main()
 }

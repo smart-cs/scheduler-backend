@@ -18,7 +18,7 @@ paths:
       parameters:
         - in: query
           name: courses
-          description: Course names to create a schedule with.
+          description: Course names to create the schedules with.
           required: true
           type: array
           items:
@@ -26,12 +26,18 @@ paths:
           example: ['MATH 100', 'CPSC 221']
         - in: query
           name: term
-          description: The term to create the schedules for.
-          schema:
-            type: string
-            enum: [1, 2, 1-2]
-            example: 2
+          description: Term to create the schedules for.
+          type: string
+          enum: [1, 2, 1-2]
+          example: 2
           default: 1-2
+        - in: query
+          name: lectures_only
+          description: Create schedules with only lectures.
+          type: boolean
+          example: false
+          default: true
+
       responses:
         200:
           description: OK

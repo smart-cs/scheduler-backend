@@ -1,4 +1,4 @@
-package server
+package schedules
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
+	"github.com/smart-cs/scheduler-backend/database"
 	"github.com/smart-cs/scheduler-backend/models"
 )
 
@@ -16,20 +17,21 @@ type ScheduleCreator interface {
 
 // DefaultScheduleCreator implements ScheduleCreator.
 type DefaultScheduleCreator struct {
-	db     CourseDatabase
+	db     database.CourseDatabase
 	helper CourseHelper
 }
 
 // ScheduleSelectOptions is a criteria for selecting schedules.
 type ScheduleSelectOptions struct {
 	// Term must be 1, 2, 1-2
-	Term string
+	Term                   string
+	SelectLabsAndTutorials bool
 }
 
 // NewScheduleCreator constructs a new ScheduleCreator.
 func NewScheduleCreator() ScheduleCreator {
 	return &DefaultScheduleCreator{
-		db:     CourseDB(),
+		db:     database.CourseDB(),
 		helper: CourseHelper{},
 	}
 }
@@ -42,10 +44,23 @@ func (sc *DefaultScheduleCreator) Create(courses []string, options ScheduleSelec
 		if !sc.courseExists(c) {
 			continue
 		}
-		lectureTypes := []models.ActivityType{models.Lecture, models.Seminar, models.Studio}
-		schedules = sc.addSections(schedules, sc.createSections(c, lectureTypes, options.Term))
-		// schedules = d.addSections(schedules, d.createSections(c, []models.ActivityType{models.Laboratory}))
-		// schedules = d.addSections(schedules, d.createSections(c, []models.ActivityType{models.Tutorial}))
+
+		if options.SelectLabsAndTutorials && options.Term == "1-2" {
+			newSchedulesTerm1, addedTerm1 := sc.addCourseToSchedules(schedules, c, "1", options.SelectLabsAndTutorials)
+			newSchedulesTerm2, addedTerm2 := sc.addCourseToSchedules(schedules, c, "2", options.SelectLabsAndTutorials)
+			if !addedTerm1 && !addedTerm2 {
+				return []models.Schedule{}
+			}
+
+			schedules = append(newSchedulesTerm1, newSchedulesTerm2...)
+			continue
+		}
+
+		newSchedules, added := sc.addCourseToSchedules(schedules, c, options.Term, options.SelectLabsAndTutorials)
+		if !added {
+			return []models.Schedule{}
+		}
+		schedules = newSchedules
 	}
 	return schedules
 }
@@ -54,6 +69,72 @@ func (sc *DefaultScheduleCreator) courseExists(course string) bool {
 	dept := strings.Split(course, " ")[0]
 	_, present := sc.db[dept][course]
 	return present
+}
+
+func (sc *DefaultScheduleCreator) courseHasActivity(course string, activity models.ActivityType) bool {
+	dept := strings.Split(course, " ")[0]
+	for _, section := range sc.db[dept][course] {
+		if len(section.Activity) == 0 {
+			// TODO: Handle invalid input.
+			continue
+		}
+
+		if section.Activity[0] == activity.String() {
+			return true
+		}
+	}
+	return false
+}
+
+func (sc *DefaultScheduleCreator) addCourseToSchedules(schedules []models.Schedule, c, term string, selectLabsAndTuts bool) ([]models.Schedule, bool) {
+	lectureSections := sc.createSections(c, term, models.Lecture, models.Seminar, models.Studio)
+	hasLabs := sc.courseHasActivity(c, models.Laboratory)
+	hasTuts := sc.courseHasActivity(c, models.Tutorial)
+
+	if !selectLabsAndTuts || (!hasLabs && !hasTuts) {
+		// Just add the lecture sections.
+		schedules = sc.addSections(schedules, lectureSections)
+		return schedules, len(schedules) != 0
+	}
+
+	// Add sections including Labs and Tutorials.
+	var sectionsArray [][]models.CourseSection
+	for _, section := range lectureSections {
+		sectionsArray = append(sectionsArray, []models.CourseSection{section})
+	}
+	if hasLabs {
+		labSections := sc.createSections(c, term, models.Laboratory)
+		sectionsArray = sc.helper.CombinationsNoConflict(sectionsArray, labSections)
+	}
+	if hasTuts {
+		tutSections := sc.createSections(c, term, models.Tutorial)
+		sectionsArray = sc.helper.CombinationsNoConflict(sectionsArray, tutSections)
+	}
+	schedules = sc.addSectionBlocks(schedules, sectionsArray)
+	return schedules, len(schedules) != 0
+}
+
+func (sc *DefaultScheduleCreator) addSectionBlocks(schedules []models.Schedule, sectionsArray [][]models.CourseSection) []models.Schedule {
+	if len(schedules) == 0 {
+		for _, sections := range sectionsArray {
+			schedules = append(schedules, models.Schedule{Courses: sections})
+		}
+		return schedules
+	}
+
+	newSchedules := []models.Schedule{}
+	for _, schedule := range schedules {
+		for _, sections := range sectionsArray {
+			for _, section := range sections {
+				newSchedule, added := sc.addSection(schedule, section)
+				if !added {
+					return []models.Schedule{}
+				}
+				newSchedules = append(newSchedules, newSchedule)
+			}
+		}
+	}
+	return newSchedules
 }
 
 func (sc *DefaultScheduleCreator) addSections(schedules []models.Schedule, sections []models.CourseSection) []models.Schedule {
@@ -91,7 +172,7 @@ func (sc *DefaultScheduleCreator) addSection(schedule models.Schedule, section m
 
 // createSections returns sections of a course with one of the specified types, thats in terms.
 // Possible terms: 1, 2, 1-2.
-func (sc *DefaultScheduleCreator) createSections(course string, activityTypes []models.ActivityType, terms string) []models.CourseSection {
+func (sc *DefaultScheduleCreator) createSections(course, term string, activityTypes ...models.ActivityType) []models.CourseSection {
 	// Course format i.e. CPSC 121
 	var sections []models.CourseSection
 	dept := strings.Split(course, " ")[0]
@@ -101,7 +182,7 @@ func (sc *DefaultScheduleCreator) createSections(course string, activityTypes []
 			continue
 		}
 
-		if (terms == "1" || terms == "2") && s.Term[0] != terms {
+		if (term == "1" || term == "2") && s.Term[0] != term {
 			continue
 		}
 
@@ -119,7 +200,7 @@ func (sc *DefaultScheduleCreator) createSections(course string, activityTypes []
 	return sections
 }
 
-func (sc *DefaultScheduleCreator) sessions(s Section) ([]models.ClassSession, error) {
+func (sc *DefaultScheduleCreator) sessions(s database.Section) ([]models.ClassSession, error) {
 	var sessions []models.ClassSession
 	for i, dayStr := range s.Days {
 		// dayStr looks like "Mon Wed Fri".
