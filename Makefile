@@ -11,7 +11,7 @@ deploy: generate-apidocs build-linux-binary ## Deploy to Heroku. Requires to be 
 	docker push registry.heroku.com/$(HEROKU_APP_NAME)/web
 	make clean
 
-run-docker: build-linux-binary ## Build Docker image and run it interactively locally
+run-docker: generate-apidocs build-linux-binary ## Build Docker image and run it interactively locally
 	docker build --rm -f Dockerfile -t scheduler-backend:latest .
 	docker run --rm -it -p 8080:8080 scheduler-backend:latest
 
