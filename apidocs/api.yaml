@@ -36,7 +36,7 @@ paths:
         200:
           description: OK
           schema:
-            $ref: '#/definitions/Schedule'
+            $ref: '#/definitions/SchedulesResponse'
         400:
           description: Missing required parameters.
 
@@ -56,13 +56,38 @@ paths:
         200:
           description: An array of valid courses.
           schema:
-            type: array
-            items:
-              type: string
+            $ref: '#/definitions/AutocompleteResponse'
         400:
           description: Missing required parameters.
 
 definitions:
+  SchedulesResponse:
+    properties:
+      OK:
+        type: boolean
+        example: true
+      status:
+        type: int
+        example: 200
+      body:
+        type: array
+        items:
+          $ref: '#/definitions/Schedule'
+
+  AutocompleteResponse:
+    properties:
+      OK:
+        type: boolean
+        example: true
+      status:
+        type: int
+        example: 200
+      body:
+        type: array
+        items:
+          type: string
+        example: ['MATH 001', 'MATH 002', 'MATH 100', 'MATH 101']
+
   Schedule:
     properties:
       courses:
