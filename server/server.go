@@ -108,9 +108,11 @@ func (s *Server) respOK(w http.ResponseWriter, body interface{}) {
 		Status: http.StatusOK,
 		Body:   body,
 	}
-	j, err := json.MarshalIndent(r, "", "    ")
+
+	j, err := json.Marshal(r)
 	if err != nil {
 		panic("can't marshal JSON")
 	}
+	w.Header().Set("Content-Type", "application/json")
 	w.Write(j)
 }
