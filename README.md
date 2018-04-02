@@ -1,5 +1,6 @@
 # scheduler-backend
 [![CircleCI](https://circleci.com/gh/Smart-CS/scheduler-backend.svg?style=svg)](https://circleci.com/gh/Smart-CS/scheduler-backend)
+[![codecov](https://codecov.io/gh/Smart-CS/scheduler-backend/branch/master/graph/badge.svg)](https://codecov.io/gh/Smart-CS/scheduler-backend)
 
 Retrieves and uses data from UBC Course Schedule.
 
