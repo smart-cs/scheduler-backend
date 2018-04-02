@@ -64,6 +64,7 @@ func TestScheduleCreator_CreateDefault(t *testing.T) {
 		{[]string{"CPSC 210"}, 6, 1},
 		{[]string{"CPSC 221"}, 5, 1},
 		{[]string{"APBI 260", "ASIA 100"}, 1, 2},
+		{[]string{"MATH 001", "MATH 101", "BIOC 202", "BIOC 203", "BIOC 304"}, 40, 5},
 	}...)
 	options := schedules.ScheduleSelectOptions{
 		Term: "1-2",
@@ -99,6 +100,9 @@ func TestShceduleCreator_CreateWithTerm(t *testing.T) {
 	}{
 		{[]string{"CPEN 221"}, "1", 1},
 		{[]string{"CPEN 221"}, "2", 0},
+		{[]string{"MATH 001", "MATH 101", "BIOC 202", "BIOC 203", "BIOC 304"}, "1", 0},
+		{[]string{"MATH 001", "MATH 101", "BIOC 202", "BIOC 203", "BIOC 304"}, "2", 0},
+		{[]string{"MATH 001", "MATH 101", "BIOC 202", "BIOC 203", "BIOC 304"}, "1-2", 40},
 	}
 
 	sc := schedules.NewScheduleCreator()
