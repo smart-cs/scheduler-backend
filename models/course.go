@@ -28,13 +28,19 @@ type Schedule struct {
 	Courses []CourseSection `json:"courses"`
 }
 
+// ActivityType is an enum, e.g. Laboratory, Lecture.
 type ActivityType int
 
 const (
+	// Laboratory ActivityType
 	Laboratory ActivityType = iota
+	// Lecture ActivityType
 	Lecture
+	// Seminar ActivityType
 	Seminar
+	// Studio ActivityType
 	Studio
+	// Tutorial ActivityType
 	Tutorial
 )
 

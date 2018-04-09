@@ -23,7 +23,7 @@ type Section struct {
 
 // CourseDatabase is the schema for our courses database.
 // Schema: DEPARTMENT_NAME -> COURSE_NAME -> COURSE_SECTION_NAME -> Section
-// e.g. DB["CPSC"]["CPSC 121"]["CPSC 121 101"] to get the underyling Section
+// e.g. DB["CPSC"]["CPSC 121"]["CPSC 121 101"] to get the underlying Section.
 type CourseDatabase map[string]map[string]map[string]Section
 
 // ValidCourses returns the valid courses.
