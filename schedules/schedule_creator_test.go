@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func setup() {
+func setupScheduleCreatorTests() {
 	database.LoadLocalDatabase("../database/coursedb.json")
 }
 
@@ -56,7 +56,7 @@ func assertTables(assert *assert.Assertions, testTables []scheduleCreatorTestTab
 }
 
 func TestScheduleCreator_CreateDefault(t *testing.T) {
-	setup()
+	setupScheduleCreatorTests()
 	testTables := append(defaultTestTables, []scheduleCreatorTestTable{
 		{[]string{"APBI 260"}, 1, 1},
 		{[]string{"CPEN 221"}, 1, 1},
@@ -74,7 +74,7 @@ func TestScheduleCreator_CreateDefault(t *testing.T) {
 }
 
 func TestScheduleCreator_CreateWithLabsAndTuts(t *testing.T) {
-	setup()
+	setupScheduleCreatorTests()
 	testTables := append(defaultTestTables, []scheduleCreatorTestTable{
 		{[]string{"APBI 260"}, 1, 2},
 		{[]string{"CPEN 221"}, 5, 3},
@@ -91,7 +91,7 @@ func TestScheduleCreator_CreateWithLabsAndTuts(t *testing.T) {
 }
 
 func TestShceduleCreator_CreateWithTerm(t *testing.T) {
-	setup()
+	setupScheduleCreatorTests()
 	assert := assert.New(t)
 	testTables := []struct {
 		courses         []string
