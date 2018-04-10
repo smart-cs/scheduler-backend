@@ -9,6 +9,5 @@ jobs:
     working_directory: /go/src/github.com/smart-cs/scheduler-backend
     steps:
       - checkout
-      - run: go test -race -coverprofile=coverage.txt -covermode=atomic
+      - run: make test-coverage
       - run: bash <(curl -s https://codecov.io/bash)
-
