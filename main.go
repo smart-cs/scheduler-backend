@@ -8,25 +8,14 @@ import (
 	"github.com/smart-cs/scheduler-backend/server"
 )
 
-const defaultPort = 8080
-
 func main() {
-	var s server.Server
-	// Use PORT from environment variables if it's set.
-	if portEnv := os.Getenv("PORT"); portEnv != "" {
-		port, err := strconv.Atoi(portEnv)
-		if err != nil {
-			fmt.Println("ERROR: can't convert PORT environment is not an integer")
+	s := server.NewServer()
+	port, present := os.LookupEnv("PORT")
+	if present {
+		if _, err := strconv.Atoi(port); err != nil {
+			fmt.Printf("PORT environment variable is not an integer: %v\n", err)
 			return
 		}
-		s = server.NewServer(port)
-	} else {
-		s = server.NewServer(defaultPort)
 	}
-	s.Start()
-}
-
-// RunMain runs main for testing purposes.
-func RunMain() {
-	main()
+	s.Run()
 }
