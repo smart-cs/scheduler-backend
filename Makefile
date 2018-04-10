@@ -29,10 +29,10 @@ test: ## Run tests
 	go test ./...
 
 test-coverage: ## Run tests with coverage
-	go test -cover ./...
+	go test -race -coverprofile=coverage.txt -covermode=atomic ./...
 
 clean: ## Clean up
-	rm -f scheduler-backend
+	rm -f scheduler-backend coverage.txt
 	rm -rf static
 
 .PHONY: help build-linux-binary deploy run-docker run generate-apidocs deps test test-coverage clean

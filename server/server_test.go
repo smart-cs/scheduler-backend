@@ -18,7 +18,7 @@ func TestSchedulesHandlerEmptyBody(t *testing.T) {
 	assert := assert.New(t)
 	database.LoadLocalDatabase("../database/coursedb.json")
 
-	s := server.NewServer(8080)
+	s := server.NewServer()
 	assert.NotNil(s, "a new server shouldn't be nil")
 
 	req, err := http.NewRequest("GET", "/schedules", strings.NewReader(url.Values{"courses": {"APSC 210"}}.Encode()))

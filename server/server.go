@@ -2,7 +2,6 @@ package server
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -19,7 +18,6 @@ const logFormat = "{{.StartTime}} | {{.Status}} | {{.Duration}} | {{.Method}} {{
 
 // Server runs the backend server.
 type Server struct {
-	Port            int
 	Middleware      *negroni.Negroni
 	ScheduleCreator schedules.ScheduleCreator
 	AutoCompleter   schedules.AutoCompleter
@@ -33,9 +31,8 @@ type StandardResponse struct {
 }
 
 // NewServer constructs a Server to listen on the given port.
-func NewServer(port int) Server {
+func NewServer() Server {
 	server := Server{
-		Port:            port,
 		Middleware:      negroni.New(),
 		ScheduleCreator: schedules.NewScheduleCreator(),
 		AutoCompleter:   schedules.NewAutoCompleter(),
@@ -64,10 +61,9 @@ func NewServer(port int) Server {
 	return server
 }
 
-// Start starts the server.
-func (s *Server) Start() {
-	fmt.Printf("Listening on port %d\n", s.Port)
-	http.ListenAndServe(fmt.Sprintf(":%d", s.Port), s.Middleware)
+// Run starts the server on $PORT or 8080 by default.
+func (s *Server) Run() {
+	s.Middleware.Run()
 }
 
 // SchedulesHandler handles the schedule endpoint

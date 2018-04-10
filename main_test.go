@@ -1,28 +1,27 @@
-package main_test
+package main
 
 import (
 	"os"
 	"testing"
 	"time"
-
-	"github.com/smart-cs/scheduler-backend"
 )
 
 func runMainAndAssertExit(t *testing.T, shouldExit bool) {
 	finished := make(chan bool)
 	go func() {
-		main.RunMain()
+		main()
 		finished <- true
 	}()
-	// 200 ms should be long enough to bootstrap the server
-	time.Sleep(time.Millisecond * 200)
 
+	// Wait 1.5s for the server to bootstrap.
+	time.Sleep(time.Millisecond * 1500)
 	select {
 	case _ = <-finished:
 		// Channel received a message, main exited.
 		if !shouldExit {
 			t.FailNow()
 		}
+		return
 	default:
 		// Channel hasn't received a message, main hasn't exited.
 		if shouldExit {
