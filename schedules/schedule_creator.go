@@ -45,7 +45,7 @@ func (sc *DefaultScheduleCreator) Create(courses []string, options ScheduleSelec
 			continue
 		}
 
-		if options.SelectLabsAndTutorials && options.Term == "1-2" {
+		if options.Term == "1-2" {
 			newSchedulesTerm1, addedTerm1 := sc.addCourseToSchedules(schedules, c, "1", options.SelectLabsAndTutorials)
 			newSchedulesTerm2, addedTerm2 := sc.addCourseToSchedules(schedules, c, "2", options.SelectLabsAndTutorials)
 			if !addedTerm1 && !addedTerm2 {
@@ -123,16 +123,18 @@ func (sc *DefaultScheduleCreator) addSectionBlocks(schedules []models.Schedule, 
 	}
 
 	newSchedules := []models.Schedule{}
+	addedASection := false
 	for _, schedule := range schedules {
 		for _, sections := range sectionsArray {
-			for _, section := range sections {
-				newSchedule, added := sc.addSection(schedule, section)
-				if !added {
-					return []models.Schedule{}
-				}
+			newSchedule, added := sc.addSection(schedule, sections...)
+			if added {
 				newSchedules = append(newSchedules, newSchedule)
+				addedASection = true
 			}
 		}
+	}
+	if !addedASection {
+		return []models.Schedule{}
 	}
 	return newSchedules
 }
@@ -161,11 +163,13 @@ func (sc *DefaultScheduleCreator) addSections(schedules []models.Schedule, secti
 }
 
 // addSection returns the new schedule if it succeeds, old schedule if it fails
-func (sc *DefaultScheduleCreator) addSection(schedule models.Schedule, section models.CourseSection) (models.Schedule, bool) {
+func (sc *DefaultScheduleCreator) addSection(schedule models.Schedule, sections ...models.CourseSection) (models.Schedule, bool) {
 	newSchedule := schedule
-	newSchedule.Courses = append(newSchedule.Courses, section)
-	if sc.helper.ConflictInSchedule(newSchedule) {
-		return schedule, false
+	for _, section := range sections {
+		newSchedule.Courses = append(newSchedule.Courses, section)
+		if sc.helper.ConflictInSchedule(newSchedule) {
+			return schedule, false
+		}
 	}
 	return newSchedule, true
 }
