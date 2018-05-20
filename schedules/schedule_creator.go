@@ -162,7 +162,7 @@ func (sc *DefaultScheduleCreator) addSections(schedules []models.Schedule, secti
 	return newSchedules
 }
 
-// addSection returns the new schedule if it succeeds, old schedule if it fails
+// addSection returns the new schedule if all sections can be added, otherwise returns the old schedule.
 func (sc *DefaultScheduleCreator) addSection(schedule models.Schedule, sections ...models.CourseSection) (models.Schedule, bool) {
 	newSchedule := schedule
 	for _, section := range sections {
