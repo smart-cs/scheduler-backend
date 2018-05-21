@@ -9,7 +9,7 @@ func (c *CourseHelper) CombinationsNoConflict(result [][]CourseSection, sections
 	for _, comb := range result {
 		for _, section := range sections {
 			// Create an array to use conflictInSections.
-			if c.conflictInSections(comb, []CourseSection{section}) {
+			if c.conflictInSections(append(comb, section)...) {
 				continue
 			}
 			newComb := append(comb, section)
@@ -31,12 +31,12 @@ func (c *CourseHelper) IsIncluded(activity string, desiredTypes []ActivityType) 
 
 // ConflictInSchedule returns true if there is a conflict in the schedule.
 func (c *CourseHelper) ConflictInSchedule(schedule Schedule) bool {
-	return c.conflictInSections(schedule.Courses, schedule.Courses)
+	return c.conflictInSections(schedule.Courses...)
 }
 
-func (c *CourseHelper) conflictInSections(s1s, s2s []CourseSection) bool {
-	for _, s1 := range s1s {
-		for _, s2 := range s2s {
+func (c *CourseHelper) conflictInSections(sections ...CourseSection) bool {
+	for _, s1 := range sections {
+		for _, s2 := range sections {
 			if s1.Name != s2.Name && c.conflictSection(s1, s2) {
 				return true
 			}
